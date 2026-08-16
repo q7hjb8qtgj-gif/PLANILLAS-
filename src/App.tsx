@@ -1,9 +1,9 @@
 import { useMemo, useState, type FormEvent, type ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { AreaChart, Area as ChartArea, BarChart, Bar, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { BarChart, Bar, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { AlertTriangle, BookOpen, Building2, ClipboardCheck, FileDown, FileSpreadsheet, FolderOpen, Gauge, Import, LogOut, Menu, Plus, Scale, Settings, Users, X } from 'lucide-react'
-import { Badge, Button, Card, Empty, Field, Input, Select, Table, Td, Textarea } from './components/ui'
+import { Badge, Button, Card, Empty, Field, Input, Select, Table, Td } from './components/ui'
 import { calculateCooperative, calculatePayrollItem } from './lib/calculations'
 import { exportPayrollExcel, exportPayrollPdf } from './lib/export'
 import { readWorkbook, type ImportedSheet } from './lib/import'
@@ -27,8 +27,13 @@ const canApprove = (session: UserSession) => ['administrador', 'validador', 'enc
 
 export default function App() {
   const [session, setSession] = useState<UserSession | null>(getSession())
+  if (window.location.pathname !== '/') return <NotFound />
   if (!session) return <Login onLogin={(value) => { saveSession(value); setSession(value) }} />
   return <Application session={session} logout={() => { saveSession(null); setSession(null) }} />
+}
+
+function NotFound() {
+  return <main className="grid min-h-screen place-items-center bg-slate-50 p-4"><Card className="max-w-md text-center"><p className="text-6xl font-bold text-blue-950">404</p><h1 className="mt-3 text-xl font-semibold">Página no encontrada</h1><p className="mt-2 text-sm text-slate-500">La dirección solicitada no existe.</p><Button className="mt-5" onClick={() => { window.location.href = '/' }}>Volver al inicio</Button></Card></main>
 }
 
 function Login({ onLogin }: { onLogin: (session: UserSession) => void }) {
