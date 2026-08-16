@@ -27,7 +27,7 @@ export function PayrollsPage() {
   }
   const launchItem = (entry?: PayrollItem) => {
     setEditingItem(entry || null)
-    setItemForm(entry ? { ...entry } : blankItem)
+    setItemForm(entry ? { employeeId: entry.employeeId, daysWorked: entry.daysWorked, regularHours: entry.regularHours, overtimeHours: entry.overtimeHours, rate: entry.rate, regularSalary: entry.regularSalary, overtimePay: entry.overtimePay, workPay: entry.workPay, bonus: entry.bonus, commissions: entry.commissions, otherIncome: entry.otherIncome, igss: entry.igss, advances: entry.advances, loans: entry.loans, otherDeductions: entry.otherDeductions, paymentMethod: entry.paymentMethod, reference: entry.reference || '', notes: entry.notes || '', supportDocument: entry.supportDocument || '' } : blankItem)
     setItemOpen(true)
   }
   const saveItem = (event: FormEvent) => {

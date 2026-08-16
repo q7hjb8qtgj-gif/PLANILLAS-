@@ -24,7 +24,8 @@ export async function exportPayrollExcel(payroll: Payroll, employees: Employee[]
     { field: 'Total descuentos', value: { formula: "SUM(Detalle!V2:V1048576)" } },
     { field: 'Líquido total', value: { formula: "SUM(Detalle!W2:W1048576)" } },
   ])
-  const detail = book.addWorksheet('Detalle', { views: [{ state: 'frozen', ySplit: 1 }], autoFilter: 'A1:Z1' })
+  const detail = book.addWorksheet('Detalle', { views: [{ state: 'frozen', ySplit: 1 }] })
+  detail.autoFilter = 'A1:Z1'
   detail.columns = [
     ['Código', 'code'], ['Colaborador', 'employee'], ['Días', 'daysWorked'], ['Horas ordinarias', 'regularHours'], ['Horas extras', 'overtimeHours'],
     ['Tarifa', 'rate'], ['Salario ordinario', 'regularSalary'], ['Pago horas extra', 'overtimePay'], ['Pago por obra', 'workPay'], ['Bonificación', 'bonus'],
@@ -36,7 +37,8 @@ export async function exportPayrollExcel(payroll: Payroll, employees: Employee[]
   payroll.items.forEach((item) => detail.addRow({ ...item, employee: employees.find((entry) => entry.id === item.employeeId)?.fullName || '' }))
   ;['F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'U', 'V', 'W'].forEach((column) => { detail.getColumn(column).numFmt = '"Q"#,##0.00' })
   if (findings.length) {
-    const sheet = book.addWorksheet('Hallazgos', { views: [{ state: 'frozen', ySplit: 1 }], autoFilter: 'A1:G1' })
+    const sheet = book.addWorksheet('Hallazgos', { views: [{ state: 'frozen', ySplit: 1 }] })
+    sheet.autoFilter = 'A1:G1'
     sheet.columns = ['Nivel', 'Regla', 'Colaborador', 'Monto afectado', 'Descripción', 'Recomendación', 'Estado'].map((header) => ({ header, width: 28 }))
     findings.forEach((entry) => sheet.addRow([entry.severity, entry.rule, employees.find((employee) => employee.id === entry.employeeId)?.fullName || '', entry.affectedAmount, entry.description, entry.recommendation, entry.status]))
     sheet.getColumn(4).numFmt = '"Q"#,##0.00'

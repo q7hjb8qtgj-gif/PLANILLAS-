@@ -24,6 +24,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const value = useMemo(() => ({ data, session, setSession, updateData, replaceData }), [data, session, setSession, updateData, replaceData])
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>
 }
+// oxlint-disable-next-line react/only-export-components
 export function useApp() {
   const value = useContext(AppContext)
   if (!value) throw new Error('useApp debe usarse dentro de AppProvider')

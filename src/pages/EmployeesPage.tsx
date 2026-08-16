@@ -12,7 +12,7 @@ export function EmployeesPage() {
   const [editing, setEditing] = useState<Employee | null>(null)
   const [error, setError] = useState('')
   const readonly = session?.role === 'Consulta' || session?.role === 'Validador'
-  const launch = (entry?: Employee) => { setEditing(entry || null); setForm(entry ? { ...entry } : blank); setError(''); setOpen(true) }
+  const launch = (entry?: Employee) => { setEditing(entry || null); setForm(entry ? { code: entry.code, fullName: entry.fullName, dpi: entry.dpi || '', nit: entry.nit || '', companyId: entry.companyId, areaId: entry.areaId, position: entry.position, contractType: entry.contractType, bankAccount: entry.bankAccount || '', paymentMethod: entry.paymentMethod, baseRate: entry.baseRate, admissionDate: entry.admissionDate, notes: entry.notes || '' } : blank); setError(''); setOpen(true) }
   const save = (event: FormEvent) => {
     event.preventDefault()
     const normalized = form.fullName.trim().toLocaleLowerCase('es')
