@@ -7,7 +7,7 @@ import { Badge, Button, Card, Empty, Field, Input, Select, Table, Td } from './c
 import { calculateCooperative, calculatePayrollItem } from './lib/calculations'
 import { exportPayrollExcel, exportPayrollPdf } from './lib/export'
 import { readWorkbook, type ImportedSheet } from './lib/import'
-import { getSession, saveSession, store, useAppData } from './lib/store'
+import { store, useAppData } from './lib/store'
 import { persistenceMode, supabase } from './lib/supabase'
 import { currency, dateGT, nowGuatemala, numberValue, uid } from './lib/utils'
 import { validatePayroll } from './lib/validation'
@@ -26,10 +26,10 @@ const canEdit = (session: UserSession) => !['consulta'].includes(session.role)
 const canApprove = (session: UserSession) => ['administrador', 'validador', 'encargado_area'].includes(session.role)
 
 export default function App() {
-  const [session, setSession] = useState<UserSession | null>(getSession())
+  const [session, setSession] = useState<UserSession | null>(null)
   if (window.location.pathname !== '/') return <NotFound />
-  if (!session) return <Login onLogin={(value) => { saveSession(value); setSession(value) }} />
-  return <Application session={session} logout={() => { saveSession(null); setSession(null) }} />
+  if (!session) return <Login onLogin={setSession} />
+  return <Application session={session} logout={() => setSession(null)} />
 }
 
 function NotFound() {

@@ -1,9 +1,8 @@
 import { useSyncExternalStore } from 'react'
-import type { AppData, AuditLog, UserSession } from '../types'
+import type { AppData, AuditLog } from '../types'
 import { nowGuatemala, uid } from './utils'
 
 const STORAGE_KEY = 'riso-planillas-v1'
-const SESSION_KEY = 'riso-session-v1'
 export const emptyData: AppData = {
   companies: [], areas: [], costCenters: [], positions: [], workTypes: [], projects: [], payrollTypes: [],
   employees: [], payrolls: [], findings: [], attachments: [], auditLogs: [],
@@ -29,7 +28,3 @@ export const store = {
   reset() { data = emptyData; emit() },
 }
 export const useAppData = () => useSyncExternalStore(store.subscribe, store.get)
-export const getSession = (): UserSession | null => {
-  try { return JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null') as UserSession | null } catch { return null }
-}
-export const saveSession = (session: UserSession | null) => session ? sessionStorage.setItem(SESSION_KEY, JSON.stringify(session)) : sessionStorage.removeItem(SESSION_KEY)

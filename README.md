@@ -29,7 +29,7 @@ npm run build
 
 ### Modo local
 
-Si las variables de Supabase están vacías, la aplicación usa `localStorage` para datos y `sessionStorage` para la sesión. Este modo es funcional y está aislado en `src/lib/store.ts`. Es apropiado para evaluación local, no para compartir datos entre equipos ni para producción.
+Si las variables de Supabase están vacías, la aplicación usa `localStorage` para datos y mantiene la sesión únicamente en memoria. Este modo es funcional y está aislado en `src/lib/store.ts`. Es apropiado para evaluación local, no para compartir datos entre equipos ni para producción.
 
 ### Supabase
 
