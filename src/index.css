@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy-950: #07182e;
+  --color-navy-900: #0b2443;
+  --color-navy-800: #12375f;
+}
+
+:root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #172033; background: #f4f6f9; font-synthesis: none; text-rendering: optimizeLegibility; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; min-height: 100vh; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+@media print { .no-print { display: none !important; } }
