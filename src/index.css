@@ -1,16 +1,14 @@
 @import "tailwindcss";
 
-:root {
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #0f172a;
-  background: #f8fafc;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+@theme {
+  --color-navy-950: #07182e;
+  --color-navy-900: #0b2443;
+  --color-navy-800: #12375f;
 }
 
+:root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #172033; background: #f4f6f9; font-synthesis: none; text-rendering: optimizeLegibility; }
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; min-height: 100vh; }
 button, input, select, textarea { font: inherit; }
-@media (max-width: 640px) {
-  input, select, textarea { font-size: 16px; }
-}
+button { cursor: pointer; }
+@media print { .no-print { display: none !important; } }
