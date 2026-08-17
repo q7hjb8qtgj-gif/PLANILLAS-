@@ -1,47 +1,22 @@
 # Sistema de Control y Verificación de Planillas – Corporación Riso
 
-Aplicación web responsive para registrar, importar, conciliar, validar, autorizar y reportar planillas semanales. La instalación comienza sin colaboradores, planillas, pagos ni hallazgos. Solo procesa información ingresada o importada por usuarios.
+Aplicación web para registrar, importar, conciliar, validar, autorizar y reportar planillas semanales. La instalación inicia sin colaboradores, pagos ni cifras de demostración.
 
-## Funciones
+## Tecnología
 
-- Autenticación con Supabase y modo local explícito cuando no hay variables configuradas.
-- Roles: Administrador, Validador, Digitador, Consulta y Encargado de área.
-- Catálogos editables de empresas, áreas, centros de costo, puestos, tipos y proyectos.
-- Registro de colaboradores con detección de código, DPI, NIT o nombre repetido.
-- Planillas y detalle editable, cálculos automáticos, cooperativa, validaciones y autorización.
-- Importación XLSX/XLS/CSV con selección de hoja, mapeo, vista previa y errores por fila.
-- Conciliación ordinaria contra extraordinaria.
-- Excel con hojas `Resumen`, `Detalle` y `Hallazgos`; PDF con totales y firmas.
-- Evidencias, anulación sin borrado y bitácora inmutable desde la interfaz.
-- Diseño mobile-first para iPhone, tablas desplazables y captura de cámara.
-
-## Requisitos
-
-- Node.js 22 o superior.
-- npm 10 o superior.
-- Proyecto Supabase para persistencia compartida en producción.
+React 19, TypeScript, Vite, Tailwind CSS, componentes estilo shadcn/ui, React Hook Form, Zod, TanStack Query, Recharts, ExcelJS, jsPDF, Supabase y PostgreSQL.
 
 ## Instalación
 
+Requisitos: Node.js 22 o superior y npm.
+
 ```bash
 npm install
-cp .env.example .env.local
+cp .env.example .env
 npm run dev
 ```
 
-Sin variables de Supabase, la aplicación funciona en **modo local** con `localStorage`; la sesión se conserva en `sessionStorage`. Este modo sirve para evaluación o trabajo individual y no reemplaza la base compartida, RLS ni Storage de producción.
-
-## Supabase
-
-1. Cree un proyecto vacío.
-2. Ejecute `supabase/migrations/202608160001_initial_schema.sql` con Supabase CLI o SQL Editor.
-3. Cree el primer perfil y rol Administrador de forma controlada desde el panel; la migración no inserta usuarios ni información operativa.
-4. Copie la URL y la clave pública `anon`/publishable a `.env.local`.
-5. Nunca exponga la clave `service_role` en variables `VITE_*`.
-
-La migración crea tablas, relaciones, índices, restricciones, RLS, políticas por rol/ámbito, bitácora automática, protección de planillas pagadas y un bucket privado con tipos y tamaño limitados.
-
-## Comandos de calidad
+Comprobaciones:
 
 ```bash
 npm run lint
@@ -50,41 +25,57 @@ npm test
 npm run build
 ```
 
+## Persistencia
+
+### Modo local
+
+Si las variables de Supabase están vacías, la aplicación usa `localStorage` para datos y mantiene la sesión únicamente en memoria. Este modo es funcional y está aislado en `src/lib/store.ts`. Es apropiado para evaluación local, no para compartir datos entre equipos ni para producción.
+
+### Supabase
+
+1. Cree un proyecto de Supabase.
+2. Ejecute `supabase/migrations/202608160001_initial_schema.sql` desde Supabase CLI o SQL Editor.
+3. Cree el primer usuario en Supabase Auth y asigne su perfil y rol administrador mediante SQL seguro en el panel.
+4. Copie la URL y la clave pública `anon` a `.env`; nunca use la clave `service_role` en el frontend.
+5. Configure los usuarios y catálogos desde la aplicación. La migración no inserta empleados, empresas, salarios ni pagos.
+
+La migración contiene llaves foráneas, índices, restricciones, borrado lógico, RLS por rol/empresa/área, auditoría automática y un bucket privado de evidencias con límite de 10 MB.
+
+> La interfaz actual mantiene el adaptador local como fallback. Para una operación multiusuario, conecte las operaciones de `src/lib/store.ts` a las tablas tipadas de Supabase conservando el mismo contrato `AppData`.
+
+## Flujo de uso
+
+1. Configure empresas, áreas y demás catálogos.
+2. Registre colaboradores.
+3. Cree un período y su planilla.
+4. Agregue detalle manualmente o importe XLSX/CSV con mapeo. Los archivos XLS heredados deben guardarse como XLSX o CSV.
+5. Ejecute validaciones y resuelva hallazgos con evidencia.
+6. Concilie ordinaria contra extraordinaria.
+7. Complete el flujo de revisión y autorización. La aprobación primaria identifica a Luis Rivas.
+8. Exporte Excel (Resumen, Detalle y Hallazgos cuando aplique) o PDF con firmas.
+
+Todas las fechas visibles usan formato DD/MM/AAAA, los importes se presentan en quetzales y los registros temporales usan la zona `America/Guatemala`.
+
 ## Estructura
 
 ```text
 src/
-  components/       componentes UI estilo shadcn y navegación
-  context/          sesión y repositorio local auditable
-  lib/              cálculos, validación, exportación, Supabase y almacenamiento
-  pages/            módulos funcionales y página 404
-  types.ts          modelo TypeScript
-supabase/migrations/ esquema PostgreSQL, RLS y auditoría
+  components/ui.tsx       Componentes reutilizables estilo shadcn/ui
+  lib/calculations.ts     Cálculos monetarios y cooperativa
+  lib/validation.ts       Motor de hallazgos
+  lib/import.ts           Lectura y vista previa de archivos
+  lib/export.ts           Reportes Excel y PDF
+  lib/store.ts            Adaptador de persistencia local
+  lib/supabase.ts         Cliente opcional de Supabase
+  App.tsx                 Módulos y flujo responsive
+supabase/migrations/      Esquema PostgreSQL, RLS y auditoría
 ```
-
-## Flujo recomendado
-
-1. Configure empresas, áreas y catálogos.
-2. Registre colaboradores reales.
-3. Cree una planilla o importe su detalle.
-4. Ejecute el motor de validación y resuelva hallazgos.
-5. Envíe a revisión. Una planilla no puede aprobarse con hallazgos críticos abiertos.
-6. Registre la validación primaria de Luis Rivas, la firma secundaria y la aprobación.
-7. Exporte los reportes y, después de efectuar el pago, marque la planilla como pagada.
-
-Las acciones de rechazo, devolución y anulación exigen motivo. Los registros se desactivan o anulan; no se eliminan desde la aplicación.
 
 ## Despliegue en Vercel
 
 1. Importe el repositorio en Vercel.
 2. Use `npm run build` y el directorio de salida `dist`.
-3. Configure `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`.
-4. Agregue el dominio de Vercel a las URL permitidas de Supabase Auth.
-5. Configure la reescritura SPA incluida en `vercel.json`.
+3. Defina `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` en los entornos requeridos.
+4. Despliegue. `vercel.json` incluye fallback para SPA y encabezados básicos de seguridad.
 
-## Formatos
-
-- Moneda: quetzales (`Q0.00`).
-- Fechas visibles: `DD/MM/AAAA`.
-- Zona horaria: `America/Guatemala`.
-- Excel: filtros, encabezados congelados, fórmulas y trazabilidad de archivo/fila.
+Antes de producción, pruebe RLS con cada rol, configure recuperación de cuenta y MFA según las políticas de la organización, y establezca copias de seguridad y retención en Supabase.
